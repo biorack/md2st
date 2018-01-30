@@ -6,11 +6,14 @@ import os
 import glob
 import json
 
-with open("/global/homes/b/bpb/repos/magi/workflow/parse_flatfiles/original_molecules.json", "r") as fid:
+
+with open("/global/homes/b/bpb/repos/md2st/original_molecules.json", "r") as fid:
     all_molecules = json.load(fid)
 
 python_binary = '/global/common/software/m2650/python-cori/bin/python'
-py_file = '/global/homes/b/bpb/repos/magi/workflow/parse_flatfiles/standardize_compounds.py'
+py_file = '/global/homes/b/bpb/repos/md2st/standardize_compounds.py'
+
+NUM_AT_A_TIME = 10
 
 # with open("all_molecules.pkl", "rb") as f:
 #     all_molecules = pickle.load(f)
@@ -33,7 +36,7 @@ def chunks(l, n):
     for i in range(0, len(l), n):
         yield l[i:i + n]
 
-lists_of_indices = list(chunks(indices,1))
+lists_of_indices = list(chunks(indices,NUM_AT_A_TIME))
 
 with open('taskfile.sh','w') as fid:
 	for task_indices in lists_of_indices:

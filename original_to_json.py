@@ -21,10 +21,11 @@ import uuid
 
 
 #Specify locations of flatfile databases
-biocyc_paths = ['~/Downloads/metacyc_21.5/data/','../../data/tier1/Eco_21.5/data/','../../data/tier1/Sco_17.5/data/']
-path_to_chebi = '~/Downloads/ChEBI_complete.sdf.gz'
-path_to_lipidmaps = '~/Downloads/LMSDFDownload12Dec17.tar.gz'
-output_file = 'original_molecules.json'
+biocyc_paths = ['/global/homes/b/bpb/Downloads/metacyc_21.5/data/','../../data/tier1/Eco_21.5/data/','../../data/tier1/Sco_17.5/data/']
+path_to_chebi = '/global/homes/b/bpb/Downloads/ChEBI_complete.sdf.gz'
+path_to_chebi_names = '/global/homes/b/bpb/Downloads/chebi_names.tsv'
+path_to_lipidmaps = '/global/homes/b/bpb/Downloads/LMSDFDownload12Dec17.tar.gz'
+output_file = 'original_molecules_2.json'
 
 def parse_biocyc_flat_file(my_files,attributes =  ['UNIQUE-ID','COMMON-NAME']):
     """
@@ -92,9 +93,17 @@ for path in biocyc_paths:
                   'formula':str(formula),
                   'original_smiles':str(original_smiles),
                   'unique_id':str(uuid.uuid4())})
+        else:
+            molecules.append({'original_id':str(cpd_id),
+                  'name':str(name),
+                  'source':str('BioCyc'),
+                  'formula':None,
+                  'original_smiles':None,
+                  'unique_id':str(uuid.uuid4())})
             
 
 print('doing chebi')
+done_chebi_ids = []
 with gzip.open(path_to_chebi) as fid:
     suppl = Chem.rdmolfiles.ForwardSDMolSupplier(fid,sanitize=True)
     for mol in suppl:
@@ -107,12 +116,29 @@ with gzip.open(path_to_chebi) as fid:
             except:
                 original_smiles = None
             d = mol.GetPropsAsDict()
+            done_chebi_ids.append(d['ChEBI ID'])
             molecules.append({'original_id':str(d['ChEBI ID']),
                   'name':str(d['ChEBI Name']),
                   'source':str('CHEBI'),
                   'formula':str(formula),
                   'original_smiles':str(original_smiles),
                   'unique_id':str(uuid.uuid4())})
+
+# add chebi compounds that only have a name
+chebi_names = pd.read_csv(path_to_chebi_names,sep='\t')
+chebi_names = chebi_names[['COMPOUND_ID','NAME']]
+chebi_names.columns = ['compound_id','name']
+chebi_names.drop_duplicates(subset='compound_id',inplace=True)
+chebi_names['compound_id'] = chebi_names['compound_id'].apply(lambda x: 'CHEBI:%d'%x)
+missing_chebi_names = chebi_names[~ chebi_names['compound_id'].isin(done_chebi_ids)]
+for i,row in missing_chebi_names.iterrows():
+	molecules.append({'original_id':str(row.compound_id),
+	  'name':str(row.name),
+	  'source':str('CHEBI'),
+	  'formula':None,
+	  'original_smiles':None,
+	  'unique_id':str(uuid.uuid4())})
+
             
 """
 LOAD LIPID MAPS
@@ -123,7 +149,6 @@ PUBCHEM_SUBSTANCE_URL, SYSTEMATIC_NAME, SYNONYMS,EXACT_MASS, FORMULA, LIPIDBANK_
 PUBCHEM_SID, KEGG_HI KEY, INCHI STRING, STATUS
 """
 print('doing lipid maps')
-molecules = []
 with gzip.open(path_to_lipidmaps) as fid:
     suppl = Chem.rdmolfiles.ForwardSDMolSupplier(fid,sanitize=True)
     for mol in suppl:
