@@ -11,6 +11,6 @@
 #SBATCH -L project 
 module load taskfarmer
 #export PATH=$PATH:/usr/common/tig/taskfarmer/1.5/bin:$(pwd)
-export THREADS=63
+export THREADS=252
 pwd
 runcommands.sh taskfile.sh

@@ -6,6 +6,12 @@ import os
 import glob
 import json
 
+import argparse
+
+parser = argparse.ArgumentParser()
+
+# To make the input integers
+parser.add_argument('--num', type=int)
 
 with open("/global/homes/b/bpb/repos/md2st/original_molecules.json", "r") as fid:
     all_molecules = json.load(fid)
@@ -13,13 +19,14 @@ with open("/global/homes/b/bpb/repos/md2st/original_molecules.json", "r") as fid
 python_binary = '/global/common/software/m2650/python-cori/bin/python'
 py_file = '/global/homes/b/bpb/repos/md2st/standardize_compounds.py'
 
-NUM_AT_A_TIME = 10
+args = parser.parse_args()
+NUM_AT_A_TIME = args.num
 
 # with open("all_molecules.pkl", "rb") as f:
 #     all_molecules = pickle.load(f)
 
 done_mol_files = glob.glob('sanitized_molecules/*.json')
-
+print(len(done_mol_files))
 # indices in list of mols in pickle file
 all_indices = range(0,len(all_molecules))
 

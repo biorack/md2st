@@ -1,5 +1,12 @@
 # md2st
-metabolite databases to standardized tautomers
+Metabolite Databases to Standardized Tautomers
+
+To maintain the original compound found in a metabolite database and a standardized representation for grouping metabolites that you would like to consider the same (e.g. arpartate and aspartic acid) you need a clean code to bring in structures (hopefully from sdf of mol files) and a standardization recipe.
+
+We aren't suggesting that this is the best way to standardize molecules, but its how we do it: 1) neutralize; 2) desalt; 3) canonical tautomer.  The canonical tautomer comes from MolVS.  The neutralize and desalt codes are from various rdkit help forums.
+
+You will need to download the input metabolite databases.  Code here uses  MetaCyc mol files; ChEBI sdf complete; and Lipid Maps sdf complete.
+
 
 1. original_to_json.py 
     - Import original compounds from a variety of sources and create a json file with database id, name, source, formula and original structure as a kekule form SMILES structural representation.  Each is assigned a unique identifier in case you must go back to an entry.

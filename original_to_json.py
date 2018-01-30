@@ -25,7 +25,7 @@ biocyc_paths = ['/global/homes/b/bpb/Downloads/metacyc_21.5/data/','../../data/t
 path_to_chebi = '/global/homes/b/bpb/Downloads/ChEBI_complete.sdf.gz'
 path_to_chebi_names = '/global/homes/b/bpb/Downloads/chebi_names.tsv'
 path_to_lipidmaps = '/global/homes/b/bpb/Downloads/LMSDFDownload12Dec17.tar.gz'
-output_file = 'original_molecules_2.json'
+output_file = 'original_molecules.json'
 
 def parse_biocyc_flat_file(my_files,attributes =  ['UNIQUE-ID','COMMON-NAME']):
     """
@@ -131,9 +131,11 @@ chebi_names.columns = ['compound_id','name']
 chebi_names.drop_duplicates(subset='compound_id',inplace=True)
 chebi_names['compound_id'] = chebi_names['compound_id'].apply(lambda x: 'CHEBI:%d'%x)
 missing_chebi_names = chebi_names[~ chebi_names['compound_id'].isin(done_chebi_ids)]
+print(len(missing_chebi_names))
 for i,row in missing_chebi_names.iterrows():
-	molecules.append({'original_id':str(row.compound_id),
-	  'name':str(row.name),
+	print(row['compound_id'],row['name'])
+	molecules.append({'original_id':str(row['compound_id']),
+	  'name':str(row['name']),
 	  'source':str('CHEBI'),
 	  'formula':None,
 	  'original_smiles':None,
