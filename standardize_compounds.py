@@ -93,6 +93,10 @@ def desalt(mol):
                 status = True
     return parent_mol,status
 
+def force_to_unicode(text):
+    "If text is unicode, it is returned as is. If it's str, convert it to Unicode using UTF-8 encoding"
+    return text if isinstance(text, unicode) else text.decode('utf8')
+
 def mol_to_neutral_desalted_canonical(mol_entry,filename):
     """
     given an rdkit mol and filename
@@ -102,8 +106,9 @@ def mol_to_neutral_desalted_canonical(mol_entry,filename):
     canon = tautomer.TautomerCanonicalizer()
     if mol_entry['original_smiles'] is not None:
         mol = Chem.MolFromSmiles(mol_entry['original_smiles'])
-        print('%s SMILES: %s'%(mol_entry['name'],mol_entry['original_smiles']))
-        if (mol.GetNumAtoms()>0) and (mol is not None) and (not '*' in mol_entry['original_smiles']):
+        # print('%s SMILES: %s'%(force_to_unicode(mol_entry['name']),mol_entry['original_smiles']))
+        print('SMILES: %s'%(mol_entry['original_smiles']))
+        if (not '*' in mol_entry['original_smiles']) and (mol is not None) and (mol.GetNumAtoms()>0):
             Chem.SanitizeMol(mol)
             Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
             mol, status = neutralise_charges(mol)
