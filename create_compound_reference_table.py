@@ -2,7 +2,7 @@ import json
 import pandas as pd
 import glob as glob
 
-output_filename = 'standardized_molecules.csv'
+output_filename = 'standardized_molecules_2.csv'
 
 done_mol_files = glob.glob('sanitized_molecules/*.json')
 all_molecules = []

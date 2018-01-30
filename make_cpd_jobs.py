@@ -25,7 +25,7 @@ NUM_AT_A_TIME = args.num
 # with open("all_molecules.pkl", "rb") as f:
 #     all_molecules = pickle.load(f)
 
-done_mol_files = glob.glob('sanitized_molecules/*.json')
+done_mol_files = glob.glob('sanitized_molecules_2/*.json')
 print(len(done_mol_files))
 # indices in list of mols in pickle file
 all_indices = range(0,len(all_molecules))

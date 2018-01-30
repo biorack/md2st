@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -N 11 -c 64
+#SBATCH -N 20 -c 64
 #SBATCH -p debug
 
 #SBATCH --error="slurm.err"
@@ -11,6 +11,6 @@
 #SBATCH -L project 
 module load taskfarmer
 #export PATH=$PATH:/usr/common/tig/taskfarmer/1.5/bin:$(pwd)
-export THREADS=64
+export THREADS=19
 pwd
 runcommands.sh taskfile.sh

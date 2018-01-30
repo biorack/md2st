@@ -21,7 +21,7 @@ parser.add_argument('--mol_indices', nargs='+', type=int)
 with open("/global/homes/b/bpb/repos/md2st/original_molecules.json", "r") as fid:
     all_molecules = json.load(fid)
 
-save_path = '/global/homes/b/bpb/repos/md2st/sanitized_molecules'
+save_path = '/global/homes/b/bpb/repos/md2st/sanitized_molecules_2'
 if not os.path.exists(save_path):
     os.makedirs(save_path)
 
@@ -113,13 +113,13 @@ def mol_to_neutral_desalted_canonical(mol_entry,filename):
             Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
             mol, status = neutralise_charges(mol)
             mol, status = desalt(mol)
-    #         try:
-    #             mol = standardizer.standardize(mol)
-    #             Chem.SanitizeMol(mol)
-    #             Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
-    #         except:
-            Chem.SanitizeMol(mol)
-            Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
+            try:
+                mol = standardizer.standardize(mol)
+                Chem.SanitizeMol(mol)
+                Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
+            except:
+                Chem.SanitizeMol(mol)
+                Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
             mol = canon.canonicalize(mol)
             Chem.SanitizeMol(mol)
             Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
