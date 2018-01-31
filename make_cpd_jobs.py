@@ -25,6 +25,27 @@ NUM_AT_A_TIME = args.num
 # with open("all_molecules.pkl", "rb") as f:
 #     all_molecules = pickle.load(f)
 
+"""
+
+Solution to not doing molecules over and over again... 
+This also keeps millions of little json files from piling up on teh filesystem.
+
+* load the completed molecules table as a dataframe
+* load all the input structures
+* load all the json files in the directory
+* add all the json files in the directory to the completed molecules dataframe
+* drop duplicates
+* delete all teh json files
+* see if any input structures aren't already in the completed molecules dataframe
+* make jobs for those structures
+
+criteria for keeping: drop duplicates on pretty much all rows. 
+The UUID field is unnecessary at this point
+numerical pandas index is unnecessary. compound id can be index.
+maybe by setting compound id is a cheap and easy way to do the deduplication.
+
+"""
+
 done_mol_files = glob.glob('sanitized_molecules_2/*.json')
 print(len(done_mol_files))
 # indices in list of mols in pickle file

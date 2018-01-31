@@ -23,6 +23,8 @@ import uuid
 #Specify locations of flatfile databases
 biocyc_paths = ['/global/homes/b/bpb/Downloads/metacyc_21.5/data/','../../data/tier1/Eco_21.5/data/','../../data/tier1/Sco_17.5/data/']
 path_to_chebi = '/global/homes/b/bpb/Downloads/ChEBI_complete.sdf.gz'
+path_to_hmdb = '/global/homes/b/bpb/Downloads/hmdb_structures.sdf'
+
 path_to_chebi_names = '/global/homes/b/bpb/Downloads/chebi_names.tsv'
 path_to_lipidmaps = '/global/homes/b/bpb/Downloads/LMSDFDownload12Dec17.tar.gz'
 output_file = 'original_molecules.json'
@@ -176,27 +178,26 @@ with gzip.open(path_to_lipidmaps) as fid:
 
 # """
 # LOAD HMDB
-# This doesn't work.  Maybe some of the molecules are messed up.  Needs investigation
 # """
-# print('doing hmdb')
-# with open('../../data/hmdb_structures.sdf') as fid:
-#     suppl = Chem.rdmolfiles.ForwardSDMolSupplier(fid,sanitize=True)
-#     for mol in suppl:
-#         if mol is not None:
-#             formula = CalcMolFormula(mol)
-#             try:
-#                 Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
-#                 smiles = Chem.MolToSmiles(mol,isomericSmiles=True)
-#                 original_smiles = smiles
-#             except:
-#                 original_smiles = None
-#             d = mol.GetPropsAsDict()
-#             molecules.append({'original_id':d['HMDB_ID'],
-#                               'name':d['GENERIC_NAME'],
-#                               'source':'HMDB',
-#                               'formula':formula,
-#                               'original_smiles':original_smiles,
-#                               'unique_id':str(uuid.uuid4())})
+print('doing hmdb')
+hmdb_df = Chem.PandasTools.LoadSDF(path_to_hmdb, idName='ID', molColName='ROMol', includeFingerprints=False, isomericSmiles=False, smilesName=None, embedProps=False)
+for i,row in hmdb_df.iterrows():
+    mol = row['ROMol']
+    formula = CalcMolFormula(mol)
+    try:
+        Chem.SanitizeMol(mol)
+        Chem.rdmolops.Kekulize(mol, clearAromaticFlags=True)
+        smiles = Chem.MolToSmiles(mol,isomericSmiles=True)
+        original_smiles = smiles
+    except:
+        print('HMDB SANITIZATION ERROR',row['HMDB_ID'],row['GENERIC_NAME'])
+        original_smiles = None
+    molecules.append({'original_id':row['HMDB_ID'],
+                      'name':row['GENERIC_NAME'],
+                      'source':'HMDB',
+                      'formula':formula,
+                      'original_smiles':original_smiles,
+                      'unique_id':str(uuid.uuid4())})
 
 
 import json

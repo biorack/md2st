@@ -5,6 +5,8 @@ To maintain the original compound found in a metabolite database and a standardi
 
 We aren't suggesting that this is the best way to standardize molecules, but its how we do it: neutralize; desalt; and find canonical tautomer.  The canonical tautomer comes from MolVS.  The neutralization and desalting procedures are from various rdkit help forums.
 
+A major limitation of this approach is that stereo-chemistry is lost when creating the standardized forms.  D and L isomers will be consolidated as identical standard forms.
+
 # Procedure
 
 1. original_to_json.py 
